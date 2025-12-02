@@ -1,0 +1,30 @@
+{
+  "name": "db_course_work",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seniaz/DB_course_work.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/seniaz/DB_course_work/issues"
+  },
+  "homepage": "https://github.com/seniaz/DB_course_work#readme",
+  "dependencies": {
+    "@prisma/client": "^6.19.1",
+    "express": "^5.2.1",
+    "pg": "^8.16.3",
+    "prisma": "^6.19.1"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
+  }
+}
