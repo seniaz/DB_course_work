@@ -1,4 +1,29 @@
 -- CreateTable
+CREATE TABLE "users" (
+    "userid" SERIAL NOT NULL,
+    "username" VARCHAR(50) NOT NULL,
+    "email" VARCHAR(100) NOT NULL,
+    "password" VARCHAR(255) NOT NULL,
+    "nickname" VARCHAR(50),
+    "avatarurl" TEXT,
+    "createdat" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedat" TIMESTAMP(6) NOT NULL,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("userid")
+);
+
+-- CreateTable
+CREATE TABLE "publisher" (
+    "publisherid" SERIAL NOT NULL,
+    "name" VARCHAR(100) NOT NULL,
+    "country" VARCHAR(50),
+    "website" TEXT,
+    "foundedyear" INTEGER,
+
+    CONSTRAINT "publisher_pkey" PRIMARY KEY ("publisherid")
+);
+
+-- CreateTable
 CREATE TABLE "author" (
     "authorid" SERIAL NOT NULL,
     "firstname" VARCHAR(50) NOT NULL,
@@ -11,6 +36,15 @@ CREATE TABLE "author" (
     "biography" TEXT,
 
     CONSTRAINT "author_pkey" PRIMARY KEY ("authorid")
+);
+
+-- CreateTable
+CREATE TABLE "genre" (
+    "genreid" SERIAL NOT NULL,
+    "name" VARCHAR(50) NOT NULL,
+    "description" TEXT,
+
+    CONSTRAINT "genre_pkey" PRIMARY KEY ("genreid")
 );
 
 -- CreateTable
@@ -46,26 +80,6 @@ CREATE TABLE "bookgenre" (
 );
 
 -- CreateTable
-CREATE TABLE "genre" (
-    "genreid" SERIAL NOT NULL,
-    "name" VARCHAR(50) NOT NULL,
-    "description" TEXT,
-
-    CONSTRAINT "genre_pkey" PRIMARY KEY ("genreid")
-);
-
--- CreateTable
-CREATE TABLE "publisher" (
-    "publisherid" SERIAL NOT NULL,
-    "name" VARCHAR(100) NOT NULL,
-    "country" VARCHAR(50),
-    "website" TEXT,
-    "foundedyear" INTEGER,
-
-    CONSTRAINT "publisher_pkey" PRIMARY KEY ("publisherid")
-);
-
--- CreateTable
 CREATE TABLE "rating" (
     "ratingid" SERIAL NOT NULL,
     "userid" INTEGER NOT NULL,
@@ -73,17 +87,6 @@ CREATE TABLE "rating" (
     "score" DECIMAL(2,1) NOT NULL,
 
     CONSTRAINT "rating_pkey" PRIMARY KEY ("ratingid")
-);
-
--- CreateTable
-CREATE TABLE "readinglist" (
-    "readinglistid" SERIAL NOT NULL,
-    "userid" INTEGER NOT NULL,
-    "bookid" INTEGER NOT NULL,
-    "status" VARCHAR(20) NOT NULL,
-    "addeddate" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "readinglist_pkey" PRIMARY KEY ("readinglistid")
 );
 
 -- CreateTable
@@ -99,31 +102,15 @@ CREATE TABLE "review" (
 );
 
 -- CreateTable
-CREATE TABLE "users" (
-    "userid" SERIAL NOT NULL,
-    "username" VARCHAR(50) NOT NULL,
-    "email" VARCHAR(100) NOT NULL,
-    "password" VARCHAR(255) NOT NULL,
-    "nickname" VARCHAR(50),
-    "avatarurl" TEXT,
+CREATE TABLE "readinglist" (
+    "readinglistid" SERIAL NOT NULL,
+    "userid" INTEGER NOT NULL,
+    "bookid" INTEGER NOT NULL,
+    "status" VARCHAR(20) NOT NULL,
+    "addeddate" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "users_pkey" PRIMARY KEY ("userid")
+    CONSTRAINT "readinglist_pkey" PRIMARY KEY ("readinglistid")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "book_isbn_key" ON "book"("isbn");
-
--- CreateIndex
-CREATE UNIQUE INDEX "genre_name_key" ON "genre"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "rating_userid_bookid_key" ON "rating"("userid", "bookid");
-
--- CreateIndex
-CREATE UNIQUE INDEX "readinglist_userid_bookid_key" ON "readinglist"("userid", "bookid");
-
--- CreateIndex
-CREATE UNIQUE INDEX "review_userid_bookid_key" ON "review"("userid", "bookid");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
@@ -131,14 +118,50 @@ CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
+-- CreateIndex
+CREATE INDEX "idx_user_email" ON "users"("email");
+
+-- CreateIndex
+CREATE INDEX "idx_author_lastname" ON "author"("lastname");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "genre_name_key" ON "genre"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "book_isbn_key" ON "book"("isbn");
+
+-- CreateIndex
+CREATE INDEX "idx_book_title" ON "book"("title");
+
+-- CreateIndex
+CREATE INDEX "idx_book_publisher" ON "book"("publisherid");
+
+-- CreateIndex
+CREATE INDEX "idx_rating_book" ON "rating"("bookid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "rating_userid_bookid_key" ON "rating"("userid", "bookid");
+
+-- CreateIndex
+CREATE INDEX "idx_review_book" ON "review"("bookid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "review_userid_bookid_key" ON "review"("userid", "bookid");
+
+-- CreateIndex
+CREATE INDEX "idx_readinglist_user" ON "readinglist"("userid");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "readinglist_userid_bookid_key" ON "readinglist"("userid", "bookid");
+
 -- AddForeignKey
 ALTER TABLE "book" ADD CONSTRAINT "book_publisherid_fkey" FOREIGN KEY ("publisherid") REFERENCES "publisher"("publisherid") ON DELETE SET NULL ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "bookauthor" ADD CONSTRAINT "bookauthor_authorid_fkey" FOREIGN KEY ("authorid") REFERENCES "author"("authorid") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "bookauthor" ADD CONSTRAINT "bookauthor_bookid_fkey" FOREIGN KEY ("bookid") REFERENCES "book"("bookid") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "bookauthor" ADD CONSTRAINT "bookauthor_bookid_fkey" FOREIGN KEY ("bookid") REFERENCES "book"("bookid") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "bookauthor" ADD CONSTRAINT "bookauthor_authorid_fkey" FOREIGN KEY ("authorid") REFERENCES "author"("authorid") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "bookgenre" ADD CONSTRAINT "bookgenre_bookid_fkey" FOREIGN KEY ("bookid") REFERENCES "book"("bookid") ON DELETE CASCADE ON UPDATE NO ACTION;
@@ -147,13 +170,19 @@ ALTER TABLE "bookgenre" ADD CONSTRAINT "bookgenre_bookid_fkey" FOREIGN KEY ("boo
 ALTER TABLE "bookgenre" ADD CONSTRAINT "bookgenre_genreid_fkey" FOREIGN KEY ("genreid") REFERENCES "genre"("genreid") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
+ALTER TABLE "rating" ADD CONSTRAINT "rating_userid_fkey" FOREIGN KEY ("userid") REFERENCES "users"("userid") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
 ALTER TABLE "rating" ADD CONSTRAINT "rating_bookid_fkey" FOREIGN KEY ("bookid") REFERENCES "book"("bookid") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "rating" ADD CONSTRAINT "rating_userid_fkey" FOREIGN KEY ("userid") REFERENCES "users"("userid") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "review" ADD CONSTRAINT "review_userid_fkey" FOREIGN KEY ("userid") REFERENCES "users"("userid") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "review" ADD CONSTRAINT "review_bookid_fkey" FOREIGN KEY ("bookid") REFERENCES "book"("bookid") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "review" ADD CONSTRAINT "review_userid_fkey" FOREIGN KEY ("userid") REFERENCES "users"("userid") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "readinglist" ADD CONSTRAINT "readinglist_userid_fkey" FOREIGN KEY ("userid") REFERENCES "users"("userid") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "readinglist" ADD CONSTRAINT "readinglist_bookid_fkey" FOREIGN KEY ("bookid") REFERENCES "book"("bookid") ON DELETE CASCADE ON UPDATE NO ACTION;

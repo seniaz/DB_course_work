@@ -8,7 +8,9 @@ services:
       POSTGRES_PASSWORD: labsdatabase
       POSTGRES_DB: book_rating
     volumes:
-      - db_book_rating_system_postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -28,5 +30,4 @@ services:
         condition: service_healthy
 
 volumes:
-  db_book_rating_system_postgres_data:
-    external: true
+  postgres_data:

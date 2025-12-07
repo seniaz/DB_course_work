@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -8,119 +8,150 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model author {
-  authorid   Int          @id @default(autoincrement())
-  firstname  String       @db.VarChar(50)
-  middlename String?      @db.VarChar(50)
-  lastname   String       @db.VarChar(50)
-  country    String?      @db.VarChar(50)
-  birthdate  DateTime?    @db.Date
-  deathdate  DateTime?    @db.Date
-  photourl   String?
-  biography  String?
-  bookauthor bookauthor[]
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model book {
-  bookid          Int          @id @default(autoincrement())
-  title           String       @db.VarChar(255)
-  isbn            String?      @unique @db.VarChar(17)
-  publicationdate DateTime?    @db.Date
-  description     String?
-  pagecount       Int?
-  language        String       @default("English") @db.VarChar(50)
-  coverurl        String?
-  publisherid     Int?
-  publisher       publisher?   @relation(fields: [publisherid], references: [publisherid], onUpdate: NoAction)
-  bookauthor      bookauthor[]
-  bookgenre       bookgenre[]
-  rating          rating[]
-  review          review[]
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model bookauthor {
-  bookid      Int
-  authorid    Int
-  authororder Int
-  author      author @relation(fields: [authorid], references: [authorid], onDelete: Cascade, onUpdate: NoAction)
-  book        book   @relation(fields: [bookid], references: [bookid], onDelete: Cascade, onUpdate: NoAction)
-
-  @@id([bookid, authorid])
-}
-
-model bookgenre {
-  bookid  Int
-  genreid Int
-  book    book  @relation(fields: [bookid], references: [bookid], onDelete: Cascade, onUpdate: NoAction)
-  genre   genre @relation(fields: [genreid], references: [genreid], onDelete: Cascade, onUpdate: NoAction)
-
-  @@id([bookid, genreid])
-}
-
-model genre {
-  genreid     Int         @id @default(autoincrement())
-  name        String      @unique @db.VarChar(50)
-  description String?
-  bookgenre   bookgenre[]
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model publisher {
-  publisherid Int     @id @default(autoincrement())
-  name        String  @db.VarChar(100)
-  country     String? @db.VarChar(50)
-  website     String?
-  foundedyear Int?
-  book        book[]
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model rating {
-  ratingid Int     @id @default(autoincrement())
-  userid   Int
-  bookid   Int
-  score    Decimal @db.Decimal(2, 1)
-  book     book    @relation(fields: [bookid], references: [bookid], onDelete: Cascade, onUpdate: NoAction)
-  users    users   @relation(fields: [userid], references: [userid], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([userid, bookid])
-}
-
-model readinglist {
-  readinglistid Int      @id @default(autoincrement())
-  userid        Int
-  bookid        Int
-  status        String   @db.VarChar(20)
-  addeddate     DateTime @default(now()) @db.Timestamp(6)
-
-  @@unique([userid, bookid])
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model review {
-  reviewid     Int       @id @default(autoincrement())
-  userid       Int
-  bookid       Int
-  reviewtext   String
-  reviewdate   DateTime  @default(now()) @db.Timestamp(6)
-  lasteditdate DateTime? @db.Timestamp(6)
-  book         book      @relation(fields: [bookid], references: [bookid], onDelete: Cascade, onUpdate: NoAction)
-  users        users     @relation(fields: [userid], references: [userid], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([userid, bookid])
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model users {
-  userid    Int      @id @default(autoincrement())
+model User {
+  userId    Int      @id @default(autoincrement()) @map("userid")
   username  String   @unique @db.VarChar(50)
   email     String   @unique @db.VarChar(100)
   password  String   @db.VarChar(255)
   nickname  String?  @db.VarChar(50)
-  avatarurl String?
-  rating    rating[]
-  review    review[]
+  avatarUrl String?  @map("avatarurl")
+  createdAt DateTime @default(now()) @map("createdat") @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @map("updatedat") @db.Timestamp(6)
+
+  ratings     Rating[]
+  reviews     Review[]
+  readingList ReadingList[]
+
+  @@index([email], name: "idx_user_email")
+  @@map("users")
+}
+
+model Publisher {
+  publisherId Int     @id @default(autoincrement()) @map("publisherid")
+  name        String  @db.VarChar(100)
+  country     String? @db.VarChar(50)
+  website     String?
+  foundedYear Int?    @map("foundedyear")
+
+  books Book[]
+
+  @@map("publisher")
+}
+
+model Author {
+  authorId   Int       @id @default(autoincrement()) @map("authorid")
+  firstName  String    @map("firstname") @db.VarChar(50)
+  middleName String?   @map("middlename") @db.VarChar(50)
+  lastName   String    @map("lastname") @db.VarChar(50)
+  country    String?   @db.VarChar(50)
+  birthDate  DateTime? @map("birthdate") @db.Date
+  deathDate  DateTime? @map("deathdate") @db.Date
+  photoUrl   String?   @map("photourl")
+  biography  String?
+
+  bookAuthors BookAuthor[]
+
+  @@index([lastName], name: "idx_author_lastname")
+  @@map("author")
+}
+
+model Genre {
+  genreId     Int     @id @default(autoincrement()) @map("genreid")
+  name        String  @unique @db.VarChar(50)
+  description String?
+
+  bookGenres BookGenre[]
+
+  @@map("genre")
+}
+
+model Book {
+  bookId          Int       @id @default(autoincrement()) @map("bookid")
+  title           String    @db.VarChar(255)
+  isbn            String?   @unique @db.VarChar(17)
+  publicationDate DateTime? @map("publicationdate") @db.Date
+  description     String?
+  pageCount       Int?      @map("pagecount")
+  language        String    @default("English") @db.VarChar(50)
+  coverUrl        String?   @map("coverurl")
+  publisherId     Int?      @map("publisherid")
+
+  publisher   Publisher?   @relation(fields: [publisherId], references: [publisherId], onDelete: SetNull, onUpdate: NoAction)
+  bookAuthors BookAuthor[]
+  bookGenres  BookGenre[]
+  ratings     Rating[]
+  reviews     Review[]
+  readingList ReadingList[]
+
+  @@index([title], name: "idx_book_title")
+  @@index([publisherId], name: "idx_book_publisher")
+  @@map("book")
+}
+
+model BookAuthor {
+  bookId      Int @map("bookid")
+  authorId    Int @map("authorid")
+  authorOrder Int @map("authororder")
+
+  book   Book   @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+  author Author @relation(fields: [authorId], references: [authorId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([bookId, authorId])
+  @@map("bookauthor")
+}
+
+model BookGenre {
+  bookId  Int @map("bookid")
+  genreId Int @map("genreid")
+
+  book  Book  @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+  genre Genre @relation(fields: [genreId], references: [genreId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([bookId, genreId])
+  @@map("bookgenre")
+}
+
+model Rating {
+  ratingId Int     @id @default(autoincrement()) @map("ratingid")
+  userId   Int     @map("userid")
+  bookId   Int     @map("bookid")
+  score    Decimal @db.Decimal(2, 1)
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+  book Book @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, bookId])
+  @@index([bookId], name: "idx_rating_book")
+  @@map("rating")
+}
+
+model Review {
+  reviewId     Int       @id @default(autoincrement()) @map("reviewid")
+  userId       Int       @map("userid")
+  bookId       Int       @map("bookid")
+  reviewText   String    @map("reviewtext")
+  reviewDate   DateTime  @default(now()) @map("reviewdate") @db.Timestamp(6)
+  lastEditDate DateTime? @map("lasteditdate") @db.Timestamp(6)
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+  book Book @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, bookId])
+  @@index([bookId], name: "idx_review_book")
+  @@map("review")
+}
+
+model ReadingList {
+  readingListId Int      @id @default(autoincrement()) @map("readinglistid")
+  userId        Int      @map("userid")
+  bookId        Int      @map("bookid")
+  status        String   @db.VarChar(20)
+  addedDate     DateTime @default(now()) @map("addeddate") @db.Timestamp(6)
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+  book Book @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([userId, bookId])
+  @@index([userId], name: "idx_readinglist_user")
+  @@map("readinglist")
 }
