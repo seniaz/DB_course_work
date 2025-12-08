@@ -3,9 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "jest --verbose --runInBand",
+    "test:watch": "jest --watch",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seniaz/DB_course_work.git"
@@ -25,6 +33,7 @@
     "prisma": "^6.19.1"
   },
   "devDependencies": {
-    "jest": "^30.2.0"
+    "jest": "^30.2.0",
+    "supertest": "^7.0.0"
   }
 }
