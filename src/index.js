@@ -1,11 +1,19 @@
 const express = require('express');
+const cors = require('cors');
 const prisma = require('./db');
+
+BigInt.prototype.toJSON = function() {
+  return this.toString();
+};
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+
+app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
+
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/ratings', require('./routes/ratings'));
 app.use('/api/users', require('./routes/users'));

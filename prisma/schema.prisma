@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -9,15 +8,15 @@ datasource db {
 }
 
 model User {
-  userId    Int       @id @default(autoincrement()) @map("userid")
-  username  String    @unique @db.VarChar(50)
-  email     String    @unique @db.VarChar(100)
-  password  String    @db.VarChar(255)
-  nickname  String?   @db.VarChar(50)
-  avatarUrl String?   @map("avatarurl")
-  createdAt DateTime  @default(now()) @map("createdat") @db.Timestamp(6)
-  updatedAt DateTime  @updatedAt @map("updatedat") @db.Timestamp(6)
-  deletedAt DateTime? @map("deletedat") @db.Timestamp(6)
+  userId      Int           @map("userid")    @id @default(autoincrement())
+  username    String                          @unique @db.VarChar(50)
+  email       String                          @unique @db.VarChar(100)
+  password    String                          @db.VarChar(255)
+  nickname    String?                         @db.VarChar(50)
+  avatarUrl   String?       @map("avatarurl")
+  createdAt   DateTime      @map("createdat") @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime      @map("updatedat") @updatedAt @db.Timestamp(6)
+  deletedAt   DateTime?     @map("deletedat") @db.Timestamp(6)
 
   ratings     Rating[]
   reviews     Review[]
@@ -28,27 +27,27 @@ model User {
 }
 
 model Publisher {
-  publisherId Int     @id @default(autoincrement()) @map("publisherid")
-  name        String  @db.VarChar(100)
-  country     String? @db.VarChar(50)
+  publisherId Int     @map("publisherid") @id @default(autoincrement())
+  name        String                      @db.VarChar(100)
+  country     String?                     @db.VarChar(50)
   website     String?
   foundedYear Int?    @map("foundedyear")
 
-  books Book[]
+  books       Book[]
 
   @@map("publisher")
 }
 
 model Author {
-  authorId   Int       @id @default(autoincrement()) @map("authorid")
-  firstName  String    @map("firstname") @db.VarChar(50)
-  middleName String?   @map("middlename") @db.VarChar(50)
-  lastName   String    @map("lastname") @db.VarChar(50)
-  country    String?   @db.VarChar(50)
-  birthDate  DateTime? @map("birthdate") @db.Date
-  deathDate  DateTime? @map("deathdate") @db.Date
-  photoUrl   String?   @map("photourl")
-  biography  String?
+  authorId    Int          @map("authorid")   @id @default(autoincrement())
+  firstName   String       @map("firstname")  @db.VarChar(50)
+  middleName  String?      @map("middlename") @db.VarChar(50)
+  lastName    String       @map("lastname")   @db.VarChar(50)
+  country     String?                         @db.VarChar(50)
+  birthDate   DateTime?    @map("birthdate")  @db.Date
+  deathDate   DateTime?    @map("deathdate")  @db.Date
+  photoUrl    String?      @map("photourl")
+  biography   String?
 
   bookAuthors BookAuthor[]
 
@@ -57,33 +56,33 @@ model Author {
 }
 
 model Genre {
-  genreId     Int     @id @default(autoincrement()) @map("genreid")
-  name        String  @unique @db.VarChar(50)
+  genreId     Int         @map("genreid") @id @default(autoincrement())
+  name        String                      @unique @db.VarChar(50)
   description String?
 
-  bookGenres BookGenre[]
+  bookGenres  BookGenre[]
 
   @@map("genre")
 }
 
 model Book {
-  bookId          Int       @id @default(autoincrement()) @map("bookid")
-  title           String    @db.VarChar(255)
-  isbn            String?   @unique @db.VarChar(17)
-  publicationDate DateTime? @map("publicationdate") @db.Date
+  bookId          Int           @map("bookid")          @id @default(autoincrement())
+  title           String                                @db.VarChar(255)
+  isbn            String?                               @unique @db.VarChar(17)
+  publicationDate DateTime?     @map("publicationdate") @db.Date
   description     String?
-  pageCount       Int?      @map("pagecount")
-  language        String    @default("English") @db.VarChar(50)
-  coverUrl        String?   @map("coverurl")
-  publisherId     Int?      @map("publisherid")
-  deletedAt       DateTime? @map("deletedat") @db.Timestamp(6)
+  pageCount       Int?          @map("pagecount")
+  language        String                                @default("English") @db.VarChar(50)
+  coverUrl        String?       @map("coverurl")
+  publisherId     Int?          @map("publisherid")
+  deletedAt       DateTime?     @map("deletedat")       @db.Timestamp(6)
 
-  publisher   Publisher?   @relation(fields: [publisherId], references: [publisherId], onDelete: SetNull, onUpdate: NoAction)
-  bookAuthors BookAuthor[]
-  bookGenres  BookGenre[]
-  ratings     Rating[]
-  reviews     Review[]
-  readingList ReadingList[]
+  publisher       Publisher?    @relation(fields: [publisherId], references: [publisherId], onDelete: SetNull, onUpdate: NoAction)
+  bookAuthors     BookAuthor[]
+  bookGenres      BookGenre[]
+  ratings         Rating[]
+  reviews         Review[]
+  readingList     ReadingList[]
 
   @@index([title], name: "idx_book_title")
   @@index([publisherId], name: "idx_book_publisher")
@@ -91,38 +90,38 @@ model Book {
 }
 
 model BookAuthor {
-  bookId      Int @map("bookid")
-  authorId    Int @map("authorid")
-  authorOrder Int @map("authororder")
+  bookId      Int    @map("bookid")
+  authorId    Int    @map("authorid")
+  authorOrder Int    @map("authororder")
 
-  book   Book   @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
-  author Author @relation(fields: [authorId], references: [authorId], onDelete: Cascade, onUpdate: NoAction)
+  book        Book   @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+  author      Author @relation(fields: [authorId], references: [authorId], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([bookId, authorId])
   @@map("bookauthor")
 }
 
 model BookGenre {
-  bookId  Int @map("bookid")
-  genreId Int @map("genreid")
+  bookId  Int   @map("bookid")
+  genreId Int   @map("genreid")
 
-  book  Book  @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
-  genre Genre @relation(fields: [genreId], references: [genreId], onDelete: Cascade, onUpdate: NoAction)
+  book    Book  @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+  genre   Genre @relation(fields: [genreId], references: [genreId], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([bookId, genreId])
   @@map("bookgenre")
 }
 
 model Rating {
-  ratingId  Int                         @id @default(autoincrement()) @map("ratingid")
-  userId    Int                         @map("userid")
-  bookId    Int                         @map("bookid")
+  ratingId  Int       @map("ratingid")  @id @default(autoincrement())
+  userId    Int       @map("userid")
+  bookId    Int       @map("bookid")
   score     Decimal                     @db.Decimal(2, 1)
-  updatedAt DateTime @default(now())    @updatedAt @map("updatedat") @db.Timestamp(6)
+  updatedAt DateTime  @map("updatedat") @default(now()) @updatedAt @db.Timestamp(6)
   deletedAt DateTime? @map("deletedat") @db.Timestamp(6)
 
-  user User @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
-  book Book @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+  user      User      @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+  book      Book      @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([userId, bookId])
   @@index([bookId], name: "idx_rating_book")
@@ -130,16 +129,16 @@ model Rating {
 }
 
 model Review {
-  reviewId     Int       @id @default(autoincrement()) @map("reviewid")
+  reviewId     Int       @map("reviewid")     @id @default(autoincrement())
   userId       Int       @map("userid")
   bookId       Int       @map("bookid")
   reviewText   String    @map("reviewtext")
-  reviewDate   DateTime  @default(now()) @map("reviewdate") @db.Timestamp(6)
+  reviewDate   DateTime  @map("reviewdate")   @default(now()) @db.Timestamp(6)
   lastEditDate DateTime? @map("lasteditdate") @db.Timestamp(6)
-  deletedAt    DateTime? @map("deletedat") @db.Timestamp(6)
+  deletedAt    DateTime? @map("deletedat")    @db.Timestamp(6)
 
-  user User @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
-  book Book @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+  user         User      @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+  book         Book      @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([userId, bookId])
   @@index([bookId], name: "idx_review_book")
@@ -147,14 +146,14 @@ model Review {
 }
 
 model ReadingList {
-  readingListId Int      @id @default(autoincrement()) @map("readinglistid")
+  readingListId Int      @map("readinglistid") @id @default(autoincrement())
   userId        Int      @map("userid")
   bookId        Int      @map("bookid")
-  status        String   @db.VarChar(20)
-  addedDate     DateTime @default(now()) @map("addeddate") @db.Timestamp(6)
+  status        String                         @db.VarChar(20)
+  addedDate     DateTime @map("addeddate")     @default(now()) @db.Timestamp(6)
 
-  user User @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
-  book Book @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
+  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
+  book          Book     @relation(fields: [bookId], references: [bookId], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([userId, bookId])
   @@index([userId], name: "idx_readinglist_user")

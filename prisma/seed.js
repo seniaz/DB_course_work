@@ -14,13 +14,23 @@ async function main() {
   await prisma.author.deleteMany();
   await prisma.genre.deleteMany();
   await prisma.publisher.deleteMany();
-
+  
   console.log('✅ Database cleared');
+
+  await prisma.$executeRaw`ALTER SEQUENCE users_userid_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE publisher_publisherid_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE author_authorid_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE genre_genreid_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE book_bookid_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE rating_ratingid_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE review_reviewid_seq RESTART WITH 1;`;
+  await prisma.$executeRaw`ALTER SEQUENCE readinglist_readinglistid_seq RESTART WITH 1;`;
+  console.log('✅ Sequences reset to 1');
 
   const publishers = await Promise.all([
     prisma.publisher.create({
       data: {
-        name: 'The Old Lion Publishing House',
+        name: 'Old Lion Publishing House',
         country: 'Ukraine',
         website: 'https://starylev.com.ua',
         foundedYear: 2014
@@ -51,22 +61,22 @@ async function main() {
         lastName: 'Zhadan',
         country: 'Ukraine',
         birthDate: new Date('1974-08-23'),
-        biography: 'Ukrainian writer, poet, essayist'
+        biography: 'Ukrainian writer, poet, and essayist'
       }
     }),
     prisma.author.create({
       data: {
-        firstName: 'Andrey',
+        firstName: 'Andriy',
         lastName: 'Kurkov',
         country: 'Ukraine',
         birthDate: new Date('1961-04-23'),
-        biography: 'Ukrainian writer, bestseller author'
+        biography: 'Ukrainian writer, author of bestsellers'
       }
     }),
     prisma.author.create({
       data: {
         firstName: 'Tania',
-        lastName: 'Malyarchuk',
+        lastName: 'Maliarchuk',
         country: 'Ukraine',
         birthDate: new Date('1983-06-04'),
         biography: 'Ukrainian writer and poet'
@@ -78,7 +88,7 @@ async function main() {
         lastName: 'Andrukhovych',
         country: 'Ukraine',
         birthDate: new Date('1960-03-13'),
-        biography: 'Ukrainian writer, poet, essayist'
+        biography: 'Ukrainian writer, poet, and essayist'
       }
     }),
     prisma.author.create({
@@ -87,7 +97,7 @@ async function main() {
         lastName: 'Zabuzhko',
         country: 'Ukraine',
         birthDate: new Date('1960-09-19'),
-        biography: 'Ukrainian writer, poet, philosopher'
+        biography: 'Ukrainian writer, poet, and philosopher'
       }
     })
   ]);
@@ -101,7 +111,7 @@ async function main() {
       data: { name: 'Poetry', description: 'Ukrainian poetry' }
     }),
     prisma.genre.create({
-      data: { name: 'Historical Fiction', description: 'Historical artistic literature' }
+      data: { name: 'Historical Novel', description: 'Historical fiction' }
     }),
     prisma.genre.create({
       data: { name: 'Philosophical Prose', description: 'Philosophical reflections in prose' }
@@ -118,7 +128,7 @@ async function main() {
         title: 'Voroshilovgrad',
         isbn: '978-617-679-012-3',
         publicationDate: new Date('2010-01-01'),
-        description: 'A novel about modern Ukraine, the search for self and the meaning of life',
+        description: 'A novel about modern Ukraine, searching for oneself and the meaning of life',
         pageCount: 448,
         language: 'Ukrainian',
         publisherId: publishers[0].publisherId
@@ -126,10 +136,10 @@ async function main() {
     }),
     prisma.book.create({
       data: {
-        title: 'The Life of Maria',
+        title: 'The Life of Mary',
         isbn: '978-617-679-234-9',
         publicationDate: new Date('2015-01-01'),
-        description: 'Autobiographical novel about the creative development of the writer',
+        description: 'An autobiographical novel about the creative development of the writer',
         pageCount: 184,
         language: 'Ukrainian',
         publisherId: publishers[0].publisherId
@@ -140,7 +150,7 @@ async function main() {
         title: 'Fieldwork in Ukrainian Sex',
         isbn: '978-617-585-023-1',
         publicationDate: new Date('1996-01-01'),
-        description: 'Cult book of Ukrainian literature of the 90s',
+        description: 'A cult book of Ukrainian literature from the 90s',
         pageCount: 142,
         language: 'Ukrainian',
         publisherId: publishers[1].publisherId
@@ -148,10 +158,10 @@ async function main() {
     }),
     prisma.book.create({
       data: {
-        title: 'Death in the Mangitka',
+        title: 'Death and the Penguin',
         isbn: '978-966-923-145-6',
         publicationDate: new Date('2005-01-01'),
-        description: 'Detective novel with black humor',
+        description: 'A detective novel with black humor',
         pageCount: 320,
         language: 'Ukrainian',
         publisherId: publishers[2].publisherId
@@ -264,7 +274,7 @@ async function main() {
       data: {
         userId: users[0].userId,
         bookId: books[0].bookId,
-        reviewText: 'Incredible book! Zhadan perfectly conveys the atmosphere of modern Ukraine.'
+        reviewText: 'Incredible book! Zhadan perfectly captures the atmosphere of modern Ukraine.'
       }
     }),
     prisma.review.create({
@@ -278,13 +288,14 @@ async function main() {
       data: {
         userId: users[2].userId,
         bookId: books[1].bookId,
-        reviewText: 'Malyarchuk knows how to write about complex things simply and beautifully.'
+        reviewText: 'Maliarchuk knows how to write about complex things simply and beautifully.'
       }
     })
   ]);
   console.log('✅ Reviews created');
 
   console.log('🎉 Database seeding completed!');
+  console.log('📊 Result: IDs start from 1');
 }
 
 main()

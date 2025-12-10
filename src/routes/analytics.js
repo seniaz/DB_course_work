@@ -35,8 +35,9 @@ router.get('/user-activity', async (req, res, next) => {
         ROUND(CAST(ur.avg_score AS numeric), 2) as avg_score
       FROM user_ratings ur
       INNER JOIN user_reviews urv ON ur.userid = urv.userid
-      WHERE ur.rating_count >= 2
-      HAVING ROUND(CAST(ur.avg_score AS numeric), 2) > 3.0
+      WHERE ur.rating_count >= 0
+      GROUP BY ur.userid, ur.username, ur.email, ur.rating_count, urv.review_count, ur.avg_score
+      HAVING ROUND(CAST(ur.avg_score AS numeric), 2) > 0
       ORDER BY ur.rating_count DESC, ur.avg_score DESC
       LIMIT 20;
     `;
@@ -67,7 +68,6 @@ router.get('/books-stats', async (req, res, next) => {
       LEFT JOIN bookauthor ba ON b.bookid = ba.bookid
       WHERE b.deletedat IS NULL
       GROUP BY b.bookid, b.title
-      HAVING COUNT(DISTINCT r.ratingid) > 0
       ORDER BY avg_rating DESC, rating_count DESC
       LIMIT 30;
     `;

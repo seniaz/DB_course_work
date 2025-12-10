@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
@@ -12,9 +11,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "node prisma/seed.js" 
+    "prisma:seed": "node prisma/seed.js"
   },
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seniaz/DB_course_work.git"
@@ -29,6 +27,7 @@
   "homepage": "https://github.com/seniaz/DB_course_work#readme",
   "dependencies": {
     "@prisma/client": "^6.19.1",
+    "cors": "^2.8.5",
     "express": "^5.2.1",
     "pg": "^8.16.3",
     "prisma": "^6.19.1"
