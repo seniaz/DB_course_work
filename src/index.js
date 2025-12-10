@@ -8,6 +8,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/ratings', require('./routes/ratings'));
+app.use('/api/users', require('./routes/users'));
+
 
 
 // Health check
