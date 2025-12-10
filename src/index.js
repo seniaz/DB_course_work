@@ -9,6 +9,7 @@ app.use(express.json());
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/ratings', require('./routes/ratings'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 
 
