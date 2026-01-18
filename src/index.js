@@ -18,15 +18,20 @@ app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/ratings', require('./routes/ratings'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/analytics', require('./routes/analytics'));
+app.use(
+  '/api/scenarios/books',
+  require('./routes/bookScenario.routes')
+);
 
 
 
-// Health check
+
+
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date() });
 });
 
-// Error handler
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
@@ -35,7 +40,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Запуск сервера тільки якщо це не тестове середовище
+
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`Сервер запущено на http://localhost:${PORT}`);
