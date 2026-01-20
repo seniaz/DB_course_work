@@ -178,6 +178,8 @@ npm test
 npm test tests/task1_creation.test.js
 npm test tests/task2_update.test.js
 npm test tests/task3_delete.test.js
+npm test tests/task4_books.test.js
+npm test tests/task5_server.test.js
 ```
 
 ### Режим watch (автоматичний перезапуск при змінах)
@@ -202,6 +204,16 @@ PASS  tests/task3_delete.test.js
 
 Test Suites: 3 passed, 3 total
 Tests:       5 passed, 5 total
+PASS  tests/task4_books.test.js
+  ✓ should create book and authors via transaction (4220 ms)
+  ✓ should return 400 on invalid input data (6 ms)
+
+PASS  tests/task5_server.test.js
+  ✓ should return 200 OK on /health check (25 ms)
+  ✓ should correctly serialize BigInt to JSON string (2 ms)
+
+Test Suites: 2 passed, 2 total
+Tests:       4 passed, 4 total
 ```
 
 ---
